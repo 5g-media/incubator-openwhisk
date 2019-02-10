@@ -53,6 +53,7 @@ object KubernetesContainer {
   def create(transid: TransactionId,
              name: String,
              image: String,
+             kind: String,
              userProvidedImage: Boolean = false,
              memory: ByteSize = 256.MB,
              environment: Map[String, String] = Map.empty,
@@ -66,7 +67,7 @@ object KubernetesContainer {
     val podName = if (origName.endsWith("-")) origName.reverse.dropWhile(_ == '-').reverse else origName
 
     for {
-      container <- kubernetes.run(podName, image, memory, environment, labels).recoverWith {
+      container <- kubernetes.run(podName, image, kind, memory, environment, labels).recoverWith {
         case _ => Future.failed(WhiskContainerStartupError(s"Failed to run container with image '${image}'."))
       }
     } yield container

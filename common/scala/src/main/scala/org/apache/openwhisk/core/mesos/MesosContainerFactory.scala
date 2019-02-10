@@ -121,6 +121,7 @@ class MesosContainerFactory(config: WhiskConfig,
   override def createContainer(tid: TransactionId,
                                name: String,
                                actionImage: ExecManifest.ImageName,
+                               kind: String,
                                userProvidedImage: Boolean,
                                memory: ByteSize,
                                cpuShares: Int)(implicit config: WhiskConfig, logging: Logging): Future[Container] = {
