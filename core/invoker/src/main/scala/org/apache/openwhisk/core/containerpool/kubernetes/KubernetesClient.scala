@@ -109,6 +109,7 @@ class KubernetesClient(
 
   def run(name: String,
           image: String,
+          kind: String,
           memory: ByteSize = 256.MB,
           environment: Map[String, String] = Map.empty,
           labels: Map[String, String] = Map.empty)(implicit transid: TransactionId): Future[KubernetesContainer] = {
@@ -125,23 +126,35 @@ class KubernetesClient(
       .endMetadata()
       .withNewSpec()
       .withRestartPolicy("Always")
-    if (config.userPodNodeAffinity.enabled) {
-      val invokerNodeAffinity = new AffinityBuilder()
+    val intermediateBuilder = podBuilder
+    if (config.userPodNodeAffinity.enabled || kind.contains("@selector")){
+      val intermediateBuilder = podBuilder.withNewAffinity()
         .withNewNodeAffinity()
         .withNewRequiredDuringSchedulingIgnoredDuringExecution()
         .addNewNodeSelectorTerm()
-        .addNewMatchExpression()
-        .withKey(config.userPodNodeAffinity.key)
-        .withOperator("In")
-        .withValues(config.userPodNodeAffinity.value)
-        .endMatchExpression()
-        .endNodeSelectorTerm()
+      if (config.userPodNodeAffinity.enabled){
+        intermediateBuilder.addNewMatchExpression()
+          .withKey(config.userPodNodeAffinity.key)
+          .withOperator("In")
+          .withValues(config.userPodNodeAffinity.value)
+          .endMatchExpression()
+      }
+      if (kind.contains("@selector")){
+        def isAllowed(c: Char): Boolean = c.isLetterOrDigit || c == '@'
+        val sanitizeSlelector = kind.filter(isAllowed).split('@')(0)
+        log.info(this, s"Action node affinity: '$sanitizeSlelector'")
+        intermediateBuilder.addNewMatchExpression()
+          .withKey(sanitizeSlelector)
+          .withOperator("In")
+          .withValues("true")
+          .endMatchExpression()
+      }
+      intermediateBuilder.endNodeSelectorTerm()
         .endRequiredDuringSchedulingIgnoredDuringExecution()
         .endNodeAffinity()
-        .build()
-      podBuilder.withAffinity(invokerNodeAffinity)
+        .endAffinity()
     }
-    val pod = podBuilder
+    val pod = intermediateBuilder
       .addNewContainer()
       .withNewResources()
       .withLimits(Map("memory" -> new Quantity(memory.toMB + "Mi")).asJava)
@@ -251,6 +264,7 @@ object KubernetesClient {
 trait KubernetesApi {
   def run(name: String,
           image: String,
+          kind: String,
           memory: ByteSize,
           environment: Map[String, String] = Map.empty,
           labels: Map[String, String] = Map.empty)(implicit transid: TransactionId): Future[KubernetesContainer]
