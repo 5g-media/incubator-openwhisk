@@ -122,6 +122,7 @@ class YARNContainerFactory(actorSystem: ActorSystem,
     unusedtid: TransactionId,
     unusedname: String,
     actionImage: ExecManifest.ImageName,
+    kind: String,
     unuseduserProvidedImage: Boolean,
     unusedmemory: ByteSize,
     unusedcpuShares: Int)(implicit config: WhiskConfig, logging: Logging): Future[Container] = {

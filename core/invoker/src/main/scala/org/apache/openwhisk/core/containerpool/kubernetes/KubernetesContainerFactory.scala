@@ -67,6 +67,7 @@ class KubernetesContainerFactory(
   override def createContainer(tid: TransactionId,
                                name: String,
                                actionImage: ImageName,
+                               kind: String,
                                userProvidedImage: Boolean,
                                memory: ByteSize,
                                cpuShares: Int)(implicit config: WhiskConfig, logging: Logging): Future[Container] = {
@@ -80,6 +81,7 @@ class KubernetesContainerFactory(
       tid,
       name,
       image,
+      kind,
       userProvidedImage,
       memory,
       environment = Map("__OW_API_HOST" -> config.wskApiHost),
