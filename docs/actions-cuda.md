@@ -21,18 +21,17 @@
 
 The following sections guide you through creating and invoking a single Cuda action.
 
-Cuda actions are executed using Cuda 8.0. The specific
-version of Cuda is listed in the CHANGELOG files in the [Cuda runtime repository](https://github.com/5g-media/incubator-openwhisk-runtime-cuda.git).
+Cuda actions are executed using Cuda 8.0 on Ubuntu 16.04. [Cuda runtime repository](https://github.com/5g-media/incubator-openwhisk-runtime-cuda.git).
 
 These actions are executed using Cuda-toolkit [8.0](https://developer.nvidia.com/cuda-80-ga2-download-archive). You will need
 a compatible version of the compiler locally available to generate the executable. Without Cuda-toolkit compiler,
 you cannot create an OpenWhisk action.
 
-To use the Cuda runtime, specify the `wsk` CLI parameter `--kind` when creating or
-updating an action. The available Cuda kinds are:
+To use the Cuda runtime, you must [deploy Openwhisk on Kubernetes](https://github.com/5g-media/incubator-openwhisk-deploy-kube/tree/cuda-v0.1) which already configured to use this runtime.
+
+You should specify the `wsk` CLI parameter `--kind` when creating or updating an action. The available Cuda kinds are:
 
 * Cuda 8.0: `--kind cuda:8.0@selector`
-* Cuda 9.0: `--kind cuda:9.0@selector`
 
 ## Packaging Cuda actions in zip files
 
