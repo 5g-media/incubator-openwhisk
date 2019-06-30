@@ -31,7 +31,7 @@ To use the Cuda runtime, you must [deploy Openwhisk on Kubernetes](https://githu
 none-alphanumeric values e.g. cuda8:
 
 ```shell
-$kubectl label nodes <GPU_NODE_NAME> cuda8=true
+$kubectl label nodes <GPU_NODE_NAME> cuda:8=true
 ```
 
 You should specify the `wsk` CLI parameter `--kind` when creating or updating an action. The available Cuda kinds are:
