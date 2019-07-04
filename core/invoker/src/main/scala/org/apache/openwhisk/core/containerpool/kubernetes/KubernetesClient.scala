@@ -109,6 +109,7 @@ class KubernetesClient(
 
   def run(name: String,
           image: String,
+          kind: String,
           memory: ByteSize = 256.MB,
           environment: Map[String, String] = Map.empty,
           labels: Map[String, String] = Map.empty)(implicit transid: TransactionId): Future[KubernetesContainer] = {
@@ -117,6 +118,10 @@ class KubernetesClient(
       case (key, value) => new EnvVarBuilder().withName(key).withValue(value).build()
     }.toSeq
 
+    val containerLimits = Map("memory" -> new Quantity(memory.toMB + "Mi")).asJava
+    if (kind.contains("@gpu")){
+      val containerLimits = Map("memory" -> new Quantity(memory.toMB + "Mi"), "nvidia.com/gpu" -> new Quantity("1")).asJava
+    }
     val podBuilder = new PodBuilder()
       .withNewMetadata()
       .withName(name)
@@ -144,7 +149,7 @@ class KubernetesClient(
     val pod = podBuilder
       .addNewContainer()
       .withNewResources()
-      .withLimits(Map("memory" -> new Quantity(memory.toMB + "Mi")).asJava)
+      .withLimits(containerLimits)
       .endResources()
       .withName("user-action")
       .withImage(image)
@@ -251,6 +256,7 @@ object KubernetesClient {
 trait KubernetesApi {
   def run(name: String,
           image: String,
+          kind: String,
           memory: ByteSize,
           environment: Map[String, String] = Map.empty,
           labels: Map[String, String] = Map.empty)(implicit transid: TransactionId): Future[KubernetesContainer]
