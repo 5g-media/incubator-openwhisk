@@ -119,10 +119,14 @@ class KubernetesClient(
     }.toSeq
 
     val containerLimits = if (kind.contains("@gpu")){
-      Map("memory" -> new Quantity(memory.toMB + "Mi")).asJava
-    } else Map("memory" -> new Quantity(memory.toMB + "Mi"), "nvidia.com/gpu" -> new Quantity("1")).asJava
-    
-    log.info("*** run() kind: {}, containerLimits: {}", kind, containerLimits)
+      Map("memory" -> new Quantity(memory.toMB + "Mi"), "nvidia.com/gpu" -> new Quantity("1")).asJava
+    } else Map("memory" -> new Quantity(memory.toMB + "Mi")).asJava
+
+    log.info(this, "===========================")
+    log.info(this, "containerLimits: " + containerLimits)
+    log.info(this, "kind: " + kind)
+    log.info(this, "===========================")
+
     val podBuilder = new PodBuilder()
       .withNewMetadata()
       .withName(name)
