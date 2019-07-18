@@ -356,6 +356,14 @@ class ContainerProxy(
       if (requestWork(data) || activeCount > 0) {
         stay using data
       } else {
+        logging.error(this, s"IN Proxy.RunCompleted")
+        logging.error(this, data)
+        logging.error(this, data.action)
+        logging.error(this, data.action.exec)
+        logging.error(this, data.action.exec.kind)        
+        if (data.action.exec.kind.contains("@gpu")){
+          self ! Remove
+        }
         goto(Ready) using data
       }
     case Event(job: Run, data: WarmedData)
@@ -394,7 +402,9 @@ class ContainerProxy(
   }
 
   when(Ready, stateTimeout = pauseGrace) {
+    
     case Event(job: Run, data: WarmedData) =>
+      logging.error(this, "IN Ready.Run")
       implicit val transid = job.msg.transid
       activeCount += 1
 
@@ -406,6 +416,7 @@ class ContainerProxy(
 
     // pause grace timed out
     case Event(StateTimeout, data: WarmedData) =>
+      logging.error(this, "IN Ready.StateTimeout")
       data.container.suspend()(TransactionId.invokerNanny).map(_ => ContainerPaused).pipeTo(self)
       goto(Pausing)
 
@@ -495,6 +506,7 @@ class ContainerProxy(
    * @param container the container to destroy
    */
   def destroyContainer(container: Container) = {
+    logging.error(this, "IN destroyContainer")
     if (!rescheduleJob) {
       context.parent ! ContainerRemoved
     } else {

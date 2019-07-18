@@ -206,7 +206,9 @@ class ContainerPool(childFactory: ActorRefFactory => ActorRef,
 
     // Container is free to take more work
     case NeedWork(warmData: WarmedData) =>
+      logging.error(this, s"IN case NeedWork(warmData: WarmedData)")
       feed ! MessageFeed.Processed
+      logging.error(this, s"after feed ! MessageFeed.Processed")
       val oldData = freePool.get(sender()).getOrElse(busyPool(sender()))
       val newData = warmData.copy(activeActivationCount = oldData.activeActivationCount - 1)
       if (newData.activeActivationCount < 0) {
@@ -236,6 +238,7 @@ class ContainerPool(childFactory: ActorRefFactory => ActorRef,
     case ContainerRemoved =>
       // if container was in free pool, it may have been processing (but under capacity),
       // so there is capacity to accept another job request
+      logging.error(this, s"IN ContainerRemoved")
       freePool.get(sender()).foreach { f =>
         freePool = freePool - sender()
         if (f.activeActivationCount > 0) {
