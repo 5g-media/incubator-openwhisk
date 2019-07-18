@@ -356,11 +356,8 @@ class ContainerProxy(
       if (requestWork(data) || activeCount > 0) {
         stay using data
       } else {
-        logging.error(this, s"IN Proxy.RunCompleted")
-        logging.error(this, data)
-        logging.error(this, data.action)
-        logging.error(this, data.action.exec)
-        logging.error(this, data.action.exec.kind)        
+        //logging.error(this, s"IN Proxy.RunCompleted")
+        //logging.error(this, "" + data)
         if (data.action.exec.kind.contains("@gpu")){
           self ! Remove
         }
