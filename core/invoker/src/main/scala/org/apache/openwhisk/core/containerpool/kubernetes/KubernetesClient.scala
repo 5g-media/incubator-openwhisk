@@ -134,7 +134,7 @@ class KubernetesClient(
       .addToLabels(labels.asJava)
       .endMetadata()
       .withNewSpec()
-      .withRestartPolicy("Always")
+      .withRestartPolicy("Always").withTerminationGracePeriodSeconds(1)
     if (config.userPodNodeAffinity.enabled) {
       val invokerNodeAffinity = new AffinityBuilder()
         .withNewNodeAffinity()
@@ -181,6 +181,10 @@ class KubernetesClient(
     }.recoverWith {
       case e =>
         log.error(this, s"Failed create pod for '$name': ${e.getClass} - ${e.getMessage}")
+        if (kind.contains("@gpu")){
+          log.error(this, s"*** DELETE POD '$name' ***")
+          rm("name", name)
+        }
         Future.failed(new Exception(s"Failed to create pod '$name'"))
     }
   }
