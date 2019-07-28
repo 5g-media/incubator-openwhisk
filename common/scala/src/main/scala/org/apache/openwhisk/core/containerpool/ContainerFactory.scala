@@ -77,6 +77,7 @@ trait ContainerFactory {
    *   that it can be obtained using the logs() method of the Container trait.
    * - It is desired that the container supports and enforces the specified memory limit and CPU shares.
    *   In particular, action memory limits rely on the underlying container technology.
+   * - TODO: add comment for gpu
    */
   def createContainer(tid: TransactionId,
                       name: String,
@@ -84,7 +85,8 @@ trait ContainerFactory {
                       kind: String,
                       userProvidedImage: Boolean,
                       memory: ByteSize,
-                      cpuShares: Int)(implicit config: WhiskConfig, logging: Logging): Future[Container]
+                      cpuShares: Int,
+                      gpu: Int)(implicit config: WhiskConfig, logging: Logging): Future[Container]
 
   /** perform any initialization */
   def init(): Unit

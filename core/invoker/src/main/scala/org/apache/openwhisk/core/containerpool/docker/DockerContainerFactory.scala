@@ -60,7 +60,8 @@ class DockerContainerFactory(instance: InvokerInstanceId,
                                kind: String,
                                userProvidedImage: Boolean,
                                memory: ByteSize,
-                               cpuShares: Int)(implicit config: WhiskConfig, logging: Logging): Future[Container] = {
+                               cpuShares: Int,
+                               gpu: Int)(implicit config: WhiskConfig, logging: Logging): Future[Container] = {
     DockerContainer.create(
       tid,
       image =

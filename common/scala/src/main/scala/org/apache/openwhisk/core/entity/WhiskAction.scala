@@ -42,7 +42,8 @@ import org.apache.openwhisk.core.entity.types.EntityStore
 case class ActionLimitsOption(timeout: Option[TimeLimit],
                               memory: Option[MemoryLimit],
                               logs: Option[LogLimit],
-                              concurrency: Option[ConcurrencyLimit])
+                              concurrency: Option[ConcurrencyLimit],
+                              gpu: Option[GpuLimit])
 
 /**
  * WhiskActionPut is a restricted WhiskAction view that eschews properties

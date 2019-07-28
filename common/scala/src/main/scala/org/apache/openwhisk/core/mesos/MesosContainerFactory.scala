@@ -125,7 +125,8 @@ class MesosContainerFactory(config: WhiskConfig,
                                kind: String,
                                userProvidedImage: Boolean,
                                memory: ByteSize,
-                               cpuShares: Int)(implicit config: WhiskConfig, logging: Logging): Future[Container] = {
+                               cpuShares: Int,
+                               gpu: Int)(implicit config: WhiskConfig, logging: Logging): Future[Container] = {
     implicit val transid = tid
     val image = if (userProvidedImage) {
       actionImage.publicImageName

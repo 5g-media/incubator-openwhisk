@@ -112,14 +112,15 @@ class KubernetesClient(
           kind: String,
           memory: ByteSize = 256.MB,
           environment: Map[String, String] = Map.empty,
-          labels: Map[String, String] = Map.empty)(implicit transid: TransactionId): Future[KubernetesContainer] = {
+          labels: Map[String, String] = Map.empty,
+          gpu: Int = 1)(implicit transid: TransactionId): Future[KubernetesContainer] = {
 
     val envVars = environment.map {
       case (key, value) => new EnvVarBuilder().withName(key).withValue(value).build()
     }.toSeq
 
     val containerLimits = if (kind.contains("@gpu")){
-      Map("memory" -> new Quantity(memory.toMB + "Mi"), "nvidia.com/gpu" -> new Quantity("1")).asJava
+      Map("memory" -> new Quantity(memory.toMB + "Mi"), "nvidia.com/gpu" -> new Quantity("" + gpu)).asJava
     } else Map("memory" -> new Quantity(memory.toMB + "Mi")).asJava
 
     log.info(this, "===========================")

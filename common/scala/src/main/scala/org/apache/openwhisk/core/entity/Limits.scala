@@ -39,18 +39,21 @@ protected[entity] abstract class Limits {
  *   timeout: maximum duration in msecs an action is allowed to consume in [100 msecs, 5 minutes],
  *   memory: maximum memory in megabytes an action is allowed to consume within system limit, default [128 MB, 512 MB],
  *   logs: maximum logs line in megabytes an action is allowed to generate [10 MB],
- *   concurrency: maximum number of concurrently processed activations per container [1, 200]
+ *   concurrency: maximum number of concurrently processed activations per container [1, 200],
+ *   gpu: number of gpu to expose to action, default 1
  * }
  *
  * @param timeout the duration in milliseconds, assured to be non-null because it is a value
  * @param memory the memory limit in megabytes, assured to be non-null because it is a value
  * @param logs the limit for logs written by the container and stored in the activation record, assured to be non-null because it is a value
  * @param concurrency the limit on concurrently processed activations per container, assured to be non-null because it is a value
+ * @param gpu the gpu limit in whole gpu integer number, assured to be non-null because it is a value
  */
 protected[core] case class ActionLimits(timeout: TimeLimit = TimeLimit(),
                                         memory: MemoryLimit = MemoryLimit(),
                                         logs: LogLimit = LogLimit(),
-                                        concurrency: ConcurrencyLimit = ConcurrencyLimit())
+                                        concurrency: ConcurrencyLimit = ConcurrencyLimit(),
+                                        gpu: GpuLimit = GpuLimit())
     extends Limits {
   override protected[entity] def toJson = ActionLimits.serdes.write(this)
 }
@@ -76,8 +79,9 @@ protected[core] object ActionLimits extends ArgNormalizer[ActionLimits] with Def
       val memory = MemoryLimit.serdes.read(obj.get("memory") getOrElse deserializationError("'memory' is missing"))
       val logs = obj.get("logs") map { LogLimit.serdes.read(_) } getOrElse LogLimit()
       val concurrency = obj.get("concurrency") map { ConcurrencyLimit.serdes.read(_) } getOrElse ConcurrencyLimit()
+      val gpu = obj.get("gpu") map { GpuLimit.serdes.read(_) } getOrElse GpuLimit()
 
-      ActionLimits(time, memory, logs, concurrency)
+      ActionLimits(time, memory, logs, concurrency, gpu)
     }
 
     def write(a: ActionLimits) = helper.write(a)
