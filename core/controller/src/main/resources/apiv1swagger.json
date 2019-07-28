@@ -1752,12 +1752,6 @@
           "format": "int32",
           "description": "number of concurrent activations allowed",
           "default": 1
-        },
-        "gpu": {
-          "type": "integer",
-          "format": "int32",
-          "description": "number of gpus",
-          "default": 1
       }
     },
     "EntityBrief": {

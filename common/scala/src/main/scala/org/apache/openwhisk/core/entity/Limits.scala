@@ -68,7 +68,7 @@ protected[core] case class TriggerLimits protected[core] () extends Limits {
 protected[core] object ActionLimits extends ArgNormalizer[ActionLimits] with DefaultJsonProtocol {
 
   override protected[core] implicit val serdes = new RootJsonFormat[ActionLimits] {
-    val helper = jsonFormat4(ActionLimits.apply)
+    val helper = jsonFormat5(ActionLimits.apply)
 
     def read(value: JsValue) = {
       val obj = Try {

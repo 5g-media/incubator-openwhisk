@@ -17,13 +17,11 @@
 
 package org.apache.openwhisk.core.entity
 
-import scala.language.postfixOps
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
 
 import spray.json._
-import org.apache.openwhisk.core.entity.size._
 import org.apache.openwhisk.core.ConfigKeys
 import pureconfig._
 
@@ -40,7 +38,7 @@ case class GpuLimitConfig(num: Int)
  */
 protected[entity] class GpuLimit private (val num: Int) extends AnyVal
 
-protected[core] object GpuLimit extends ArgNormalizer[MemoryLimit] {
+protected[core] object GpuLimit extends ArgNormalizer[GpuLimit] {
   val config = loadConfigOrThrow[GpuLimitConfig](ConfigKeys.gpu)
 
   protected[core] val numGpu: Int = config.num
@@ -52,7 +50,7 @@ protected[core] object GpuLimit extends ArgNormalizer[MemoryLimit] {
    * Creates GpuLimit for limit, iff limit is within permissible range.
    *
    * @param megabytes the limit in megabytes, must be within permissible range
-   * @return MemoryLimit with limit set
+   * @return GpuLimit with limit set
    * @throws IllegalArgumentException if limit does not conform to requirements
    */
   @throws[IllegalArgumentException]

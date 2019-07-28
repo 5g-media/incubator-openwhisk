@@ -269,7 +269,8 @@ trait KubernetesApi {
           kind: String,
           memory: ByteSize,
           environment: Map[String, String] = Map.empty,
-          labels: Map[String, String] = Map.empty)(implicit transid: TransactionId): Future[KubernetesContainer]
+          labels: Map[String, String] = Map.empty,
+          gpu: Int = 1)(implicit transid: TransactionId): Future[KubernetesContainer]
 
   def rm(container: KubernetesContainer)(implicit transid: TransactionId): Future[Unit]
 
